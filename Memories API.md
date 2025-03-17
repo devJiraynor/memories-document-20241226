@@ -356,7 +356,7 @@ User 모듈은 모두 인증 후 요청할 수 있는 모듈입니다.
 ###### Example
 
 ```bash
-curl -X GET "http://localhost:4000/api/v1/user/sign-in" \
+curl -X GET "http://127.0.0.1:4000/api/v1/user/sign-in" \
  -h "Authorization=Bearer XXXX"
 ```
 
@@ -448,7 +448,7 @@ HTTP/1.1 500 Internal Server Error
 ###### Example
 
 ```bash
-curl -v -X PATCH "http://localhost:4000/api/v1/user" \
+curl -v -X PATCH "http://127.0.0.1:4000/api/v1/user" \
  -h "Authorization=Bearer XXXX" \
  -d "name=홍길동" \
  -d "profileImage=https://~~" \
@@ -496,6 +496,485 @@ HTTP/1.1 401 Unauthorized
 {
   "code": "AF",
   "message": "Auth fail."
+}
+```
+
+**응답 : 실패 (데이터베이스 에러)**
+```bash
+HTTP/1.1 500 Internal Server Error
+
+{
+  "code": "DBE",
+  "message": "Database Error."
+}
+```
+
+***
+  
+<h2 style='background-color: rgba(55, 55, 55, 0.2); text-align: center'>Diary 모듈</h2>
+
+Memories 서비스의 일기 정보와 관련된 REST API 모듈입니다.  
+일기 작성, 나의 일기 보기, 일기 상세보기, 일기 수정, 일기 삭제 등의 API가 포함되어 있습니다.  
+Diary 모듈은 모두 인증 후 요청할 수 있는 모듈입니다. 
+  
+- url : /api/v1/diary  
+
+***
+
+#### - 일기 작성  
+  
+##### 설명
+
+클라이언트는 요청 헤더에 Bearer 인증 토큰을 포함하고 날씨, 기분, 제목, 내용을 입력하여 요청하고 일기 작성이 성공적으로 이루어지면 성공에 대한 응답을 받습니다. 서버 에러, 인증 실패, 데이터베이스 에러가 발생할 수 있습니다.    
+
+- method : **POST**  
+- URL : **/**  
+
+##### Request
+
+###### Header
+
+| name | description | required |
+|---|:---:|:---:|
+| Authorization | Bearer 토큰 인증 헤더 | O |
+
+###### Request Body
+
+| name | type | description | required |
+|---|:---:|:---:|:---:|
+| weather | String | 당일 날씨 (맑음, 흐림, 비, 눈, 안개) | O |
+| feeling | String | 당일 기분 (행복, 즐거움, 보통, 슬픔, 분노) | O |
+| title | String | 일기 제목 | O |
+| content | String | 일기 내용 (HTML 형식) | O |
+
+###### Example
+
+```bash
+curl -v -X POST "http://127.0.0.1:4000/api/v1/diary" \
+ -h "Authorization=Bearer XXXX" \
+ -d "weather="맑음" \
+ -d "feeling=행복" \
+ -d "title=오늘의 일기"\
+ -d "content=<div>행복한 하루였다</div>"\
+```
+
+##### Response
+
+###### Response Body
+
+| name | type | description | required |
+|---|:---:|:---:|:---:|
+| code | String | 응답 결과 코드 | O |
+| message | String | 응답 결과 코드에 대한 설명 | O |
+
+###### Example
+
+**응답 성공**
+```bash
+HTTP/1.1 200 OK
+
+{
+  "code": "SU",
+  "message": "Success."
+}
+```
+
+**응답 : 실패 (데이터 유효성 검사 실패)**
+```bash
+HTTP/1.1 400 Bad Request
+
+{
+  "code": "VF",
+  "message": "Validation Fail."
+}
+```
+
+**응답 : 실패 (인증 실패)**
+```bash
+HTTP/1.1 401 Unauthorized
+
+{
+  "code": "AF",
+  "message": "Auth fail."
+}
+```
+
+**응답 : 실패 (데이터베이스 에러)**
+```bash
+HTTP/1.1 500 Internal Server Error
+
+{
+  "code": "DBE",
+  "message": "Database Error."
+}
+```
+
+***
+
+#### - 내가 작성한 일기 리시트 보기  
+  
+##### 설명
+
+클라이언트는 요청 헤더에 Bearer 인증 토큰을 포함하여 요청하고 조회가 성공적으로 이루어지면 성공에 대한 응답을 받습니다. 서버 에러, 인증 실패, 데이터베이스 에러가 발생할 수 있습니다.    
+
+- method : **GET**  
+- URL : **/my**  
+
+##### Request
+
+###### Header
+
+| name | description | required |
+|---|:---:|:---:|
+| Authorization | Bearer 토큰 인증 헤더 | O |
+
+###### Example
+
+```bash
+curl -v -X GET "http://127.0.0.1:4000/api/v1/diary/my" \
+ -h "Authorization=Bearer XXXX"
+```
+
+##### Response
+
+###### Response Body
+
+| name | type | description | required |
+|---|:---:|:---:|:---:|
+| code | String | 응답 결과 코드 | O |
+| message | String | 응답 결과 코드에 대한 설명 | O |
+| diaries | Diary[] | 일기 리스트 | O |
+
+###### Diary
+
+###### Example
+
+| name | type | description | required |
+|---|:---:|:---:|:---:|
+| writeDate | String | 날짜 | O |
+| title | String | 제목 | O |
+| weather | String | 날씨 | O |
+| feeling | String | 기분 | O |
+
+**응답 성공**
+```bash
+HTTP/1.1 200 OK
+
+{
+  "code": "SU",
+  "message": "Success.",
+  "diaries": [
+    {
+      "writeDate": "2025-03-16",
+      "title": "오늘의 일기",
+      "weather": "맑음",
+      "feeling": "행복"
+    }, ...
+  ]
+}
+```
+
+**응답 : 실패 (인증 실패)**
+```bash
+HTTP/1.1 401 Unauthorized
+
+{
+  "code": "AF",
+  "message": "Auth fail."
+}
+```
+
+**응답 : 실패 (데이터베이스 에러)**
+```bash
+HTTP/1.1 500 Internal Server Error
+
+{
+  "code": "DBE",
+  "message": "Database Error."
+}
+```
+
+***
+
+#### - 일기 상세 보기  
+  
+##### 설명
+
+클라이언트는 요청 헤더에 Bearer 인증 토큰을 포함하고 URL에 일기번호를 포함하여 요청하고 조회가 성공적으로 이루어지면 성공에 대한 응답을 받습니다. 만약 존재하지 않는 일기일 경우 존재하지 않는 일기에 해당하는 응답을 받습니다. 서버 에러, 인증 실패, 데이터베이스 에러가 발생할 수 있습니다.   
+
+- method : **GET**  
+- URL : **/{diaryNumber}**  
+
+##### Request
+
+###### Header
+
+| name | description | required |
+|---|:---:|:---:|
+| Authorization | Bearer 토큰 인증 헤더 | O |
+
+###### Example
+
+```bash
+curl -v -X GET "http://127.0.0.1:4000/api/v1/diary/1" \
+ -h "Authorization=Bearer XXXX"
+```
+
+##### Response
+
+###### Response Body
+
+| name | type | description | required |
+|---|:---:|:---:|:---:|
+| code | String | 결과 코드 | O |
+| message | String | 결과 코드에 대한 설명 | O |
+| writeDate | String | 작성 날짜 | O |
+| weather | String | 날씨 | O |
+| feeling | String | 기분 | O |
+| title | String | 일기 제목 | O |
+| content | String | 일기 내용 | O |
+
+###### Example
+
+**응답 성공**
+```bash
+HTTP/1.1 200 OK
+
+{
+  "code": "SU",
+  "message": "Success.",
+  "writeDate": "2025-03-17",
+  "weather": "맑음",
+  "feeling": "행복",
+  "title": "오늘의 일기",
+  "content": "<div>행복한 하루였다</div>"
+}
+```
+
+**응답 : 실패 (존재하지 않는 일기)**
+```bash
+HTTP/1.1 400 Bad Request
+
+{
+  "code": "ND",
+  "message": "No Exist Diary."
+}
+```
+
+**응답 : 실패 (인증 실패)**
+```bash
+HTTP/1.1 401 Unauthorized
+
+{
+  "code": "AF",
+  "message": "Auth fail."
+}
+```
+
+**응답 실패 (데이터베이스 에러)**
+```bash
+HTTP/1.1 500 Internal Server Error
+
+{
+  "code": "DBE",
+  "message": "Database error."
+}
+```
+
+***
+
+#### - 일기 수정  
+  
+##### 설명
+
+클라이언트는 요청 헤더에 Bearer 인증 토큰을 포함하고 URL에 일기 번호를, 본문에 날씨, 기분, 제목, 내용을 입력하여 요청하고 일기 수정이 성공적으로 이루어지면 성공에 대한 응답을 받습니다. 서버 에러, 인증 실패, 데이터베이스 에러가 발생할 수 있습니다.    
+
+- method : **PATCH**  
+- URL : **/{diaryNumber}**  
+
+##### Request
+
+###### Header
+
+| name | description | required |
+|---|:---:|:---:|
+| Authorization | Bearer 토큰 인증 헤더 | O |
+
+###### Request Body
+
+| name | type | description | required |
+|---|:---:|:---:|:---:|
+| weather | String | 당일 날씨 (맑음, 흐림, 비, 눈, 안개) | O |
+| feeling | String | 당일 기분 (행복, 즐거움, 보통, 슬픔, 분노) | O |
+| title | String | 일기 제목 | O |
+| content | String | 일기 내용 (HTML 형식) | O |
+
+###### Example
+
+```bash
+curl -v -X PATCH "http://127.0.0.1:4000/api/v1/diary/1" \
+ -h "Authorization=Bearer XXXX" \
+ -d "weather="맑음" \
+ -d "feeling=행복" \
+ -d "title=오늘의 일기"\
+ -d "content=<div>행복한 하루였다. 즐거웠다.</div>"\
+```
+
+##### Response
+
+###### Response Body
+
+| name | type | description | required |
+|---|:---:|:---:|:---:|
+| code | String | 응답 결과 코드 | O |
+| message | String | 응답 결과 코드에 대한 설명 | O |
+
+###### Example
+
+**응답 성공**
+```bash
+HTTP/1.1 200 OK
+
+{
+  "code": "SU",
+  "message": "Success."
+}
+```
+
+**응답 : 실패 (데이터 유효성 검사 실패)**
+```bash
+HTTP/1.1 400 Bad Request
+
+{
+  "code": "VF",
+  "message": "Validation Fail."
+}
+```
+
+**응답 : 실패 (존재하지 않는 일기)**
+```bash
+HTTP/1.1 400 Bad Request
+
+{
+  "code": "ND",
+  "message": "No Exist Diary."
+}
+```
+
+**응답 : 실패 (인증 실패)**
+```bash
+HTTP/1.1 401 Unauthorized
+
+{
+  "code": "AF",
+  "message": "Auth fail."
+}
+```
+
+**응답 : 실패 (권한 없음)**
+```bash
+HTTP/1.1 403 Forbidden
+
+{
+  "code": "NP",
+  "message": "No Permission."
+}
+```
+
+**응답 : 실패 (데이터베이스 에러)**
+```bash
+HTTP/1.1 500 Internal Server Error
+
+{
+  "code": "DBE",
+  "message": "Database Error."
+}
+```
+
+***
+
+#### - 일기 삭제  
+  
+##### 설명
+
+클라이언트는 요청 헤더에 Bearer 인증 토큰을 포함하고 URL에 일기 번호를 입력하여 요청하고 일기 삭제가 성공적으로 이루어지면 성공에 대한 응답을 받습니다. 서버 에러, 인증 실패, 데이터베이스 에러가 발생할 수 있습니다.    
+
+- method : **DELETE**  
+- URL : **/{diaryNumber}**  
+
+##### Request
+
+###### Header
+
+| name | description | required |
+|---|:---:|:---:|
+| Authorization | Bearer 토큰 인증 헤더 | O |
+
+###### Example
+
+```bash
+curl -v -X DELETE "http://127.0.0.1:4000/api/v1/diary/1" \
+ -h "Authorization=Bearer XXXX" 
+```
+
+##### Response
+
+###### Response Body
+
+| name | type | description | required |
+|---|:---:|:---:|:---:|
+| code | String | 응답 결과 코드 | O |
+| message | String | 응답 결과 코드에 대한 설명 | O |
+
+###### Example
+
+**응답 성공**
+```bash
+HTTP/1.1 200 OK
+
+{
+  "code": "SU",
+  "message": "Success."
+}
+```
+
+**응답 : 실패 (데이터 유효성 검사 실패)**
+```bash
+HTTP/1.1 400 Bad Request
+
+{
+  "code": "VF",
+  "message": "Validation Fail."
+}
+```
+
+**응답 : 실패 (존재하지 않는 일기)**
+```bash
+HTTP/1.1 400 Bad Request
+
+{
+  "code": "ND",
+  "message": "No Exist Diary."
+}
+```
+
+**응답 : 실패 (인증 실패)**
+```bash
+HTTP/1.1 401 Unauthorized
+
+{
+  "code": "AF",
+  "message": "Auth fail."
+}
+```
+
+**응답 : 실패 (권한 없음)**
+```bash
+HTTP/1.1 403 Forbidden
+
+{
+  "code": "NP",
+  "message": "No Permission."
 }
 ```
 
