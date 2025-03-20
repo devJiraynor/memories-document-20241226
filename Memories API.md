@@ -997,3 +997,173 @@ Memories 서비스의 인지 검사와 관련된 REST API 모듈입니다.
 Test 모듈은 모두 인증 후 요청할 수 있는 모듈입니다. 
   
 - url : /api/v1/test  
+
+***
+
+#### - 기억력 검사 기록 
+  
+##### 설명
+
+클라이언트는 요청 헤더에 Bearer 인증 토큰을 포함하고 측정된 시간을 초단위로 입력하여 요청하고 기록이 성공적으로 이루어지면 성공에 대한 응답을 받습니다. 서버 에러, 인증 실패, 데이터베이스 에러가 발생할 수 있습니다.    
+
+- method : **POST**  
+- URL : **/memory**  
+
+##### Request
+
+###### Header
+
+| name | description | required |
+|---|:---:|:---:|
+| Authorization | Bearer 토큰 인증 헤더 | O |
+
+###### Request Body
+
+| name | type | description | required |
+|---|:---:|:---:|:---:|
+| measurementTime | Integer | 측정된 시간 (초단위) | O |
+
+###### Example
+
+```bash
+curl -v -X POST "http://127.0.0.1:4000/api/v1/test/memory" \
+ -h "Authorization=Bearer XXXX" \
+ -d "measurementTime=95 
+```
+
+##### Response
+
+###### Response Body
+
+| name | type | description | required |
+|---|:---:|:---:|:---:|
+| code | String | 응답 결과 코드 | O |
+| message | String | 응답 결과 코드에 대한 설명 | O |
+
+###### Example
+
+**응답 성공**
+```bash
+HTTP/1.1 201 CREATED
+
+{
+  "code": "SU",
+  "message": "Success."
+}
+```
+
+**응답 : 실패 (데이터 유효성 검사 실패)**
+```bash
+HTTP/1.1 400 Bad Request
+
+{
+  "code": "VF",
+  "message": "Validation Fail."
+}
+```
+
+**응답 : 실패 (인증 실패)**
+```bash
+HTTP/1.1 401 Unauthorized
+
+{
+  "code": "AF",
+  "message": "Auth fail."
+}
+```
+
+**응답 : 실패 (데이터베이스 에러)**
+```bash
+HTTP/1.1 500 Internal Server Error
+
+{
+  "code": "DBE",
+  "message": "Database Error."
+}
+```
+
+***
+
+#### - 집중력 검사 기록 
+  
+##### 설명
+
+클라이언트는 요청 헤더에 Bearer 인증 토큰을 포함하고 측정 성공 점수, 측정 오류 횟수를 입력하여 요청하고 기록이 성공적으로 이루어지면 성공에 대한 응답을 받습니다. 서버 에러, 인증 실패, 데이터베이스 에러가 발생할 수 있습니다.    
+
+- method : **POST**  
+- URL : **/concentration**  
+
+##### Request
+
+###### Header
+
+| name | description | required |
+|---|:---:|:---:|
+| Authorization | Bearer 토큰 인증 헤더 | O |
+
+###### Request Body
+
+| name | type | description | required |
+|---|:---:|:---:|:---:|
+| measurementScore | Integer | 측정 성공 횟수 | O |
+| errorCount | Integer | 측정 오류 횟수 | O |
+
+###### Example
+
+```bash
+curl -v -X POST "http://127.0.0.1:4000/api/v1/test/memory" \
+ -h "Authorization=Bearer XXXX" \
+ -d "measurementTime=17 \
+ -d "measurementTime=2 
+```
+
+##### Response
+
+###### Response Body
+
+| name | type | description | required |
+|---|:---:|:---:|:---:|
+| code | String | 응답 결과 코드 | O |
+| message | String | 응답 결과 코드에 대한 설명 | O |
+
+###### Example
+
+**응답 성공**
+```bash
+HTTP/1.1 201 CREATED
+
+{
+  "code": "SU",
+  "message": "Success."
+}
+```
+
+**응답 : 실패 (데이터 유효성 검사 실패)**
+```bash
+HTTP/1.1 400 Bad Request
+
+{
+  "code": "VF",
+  "message": "Validation Fail."
+}
+```
+
+**응답 : 실패 (인증 실패)**
+```bash
+HTTP/1.1 401 Unauthorized
+
+{
+  "code": "AF",
+  "message": "Auth fail."
+}
+```
+
+**응답 : 실패 (데이터베이스 에러)**
+```bash
+HTTP/1.1 500 Internal Server Error
+
+{
+  "code": "DBE",
+  "message": "Database Error."
+}
+```
