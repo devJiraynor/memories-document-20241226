@@ -1167,3 +1167,177 @@ HTTP/1.1 500 Internal Server Error
   "message": "Database Error."
 }
 ```
+
+***
+
+#### - 기억력 기록 리스트 보기  
+  
+##### 설명
+
+클라이언트는 요청 헤더에 Bearer 인증 토큰을 포함하여 요청하고 조회가 성공적으로 이루어지면 성공에 대한 응답을 받습니다. 서버 에러, 인증 실패, 데이터베이스 에러가 발생할 수 있습니다.    
+
+- method : **GET**  
+- URL : **/memory**  
+
+##### Request
+
+###### Header
+
+| name | description | required |
+|---|:---:|:---:|
+| Authorization | Bearer 토큰 인증 헤더 | O |
+
+###### Example
+
+```bash
+curl -v -X GET "http://127.0.0.1:4000/api/v1/test/memory" \
+ -h "Authorization=Bearer XXXX"
+```
+
+##### Response
+
+###### Response Body
+
+| name | type | description | required |
+|---|:---:|:---:|:---:|
+| code | String | 응답 결과 코드 | O |
+| message | String | 응답 결과 코드에 대한 설명 | O |
+| memoryTests | MemoryTest[] | 일기 리스트 | O |
+
+###### MemoryTest
+
+###### Example
+
+| name | type | description | required |
+|---|:---:|:---:|:---:|
+| sequence | Integer | 사용자별 검사 순번 | O |
+| measurementTime | Integer | 측정된 시간 (검사 결과) | O |
+| testDate | String | 검사한 날짜 (yyyy-MM-dd hh:mm) | O |
+| gap | Integer | 직전 순번의 측정된 시간 - 현재 순번의 측정된 시간 (초단위) | X |
+
+**응답 성공**
+```bash
+HTTP/1.1 200 OK
+
+{
+  "code": "SU",
+  "message": "Success.",
+  "diaries": [
+    {
+      "sequence": 4,
+      "measurementTime": 95,
+      "testDate": "2025-03-20 18:50",
+      "gap": 1
+    }, ...
+  ]
+}
+```
+
+**응답 : 실패 (인증 실패)**
+```bash
+HTTP/1.1 401 Unauthorized
+
+{
+  "code": "AF",
+  "message": "Auth fail."
+}
+```
+
+**응답 : 실패 (데이터베이스 에러)**
+```bash
+HTTP/1.1 500 Internal Server Error
+
+{
+  "code": "DBE",
+  "message": "Database Error."
+}
+```
+
+***
+
+#### - 집중력 기록 리스트 보기  
+  
+##### 설명
+
+클라이언트는 요청 헤더에 Bearer 인증 토큰을 포함하여 요청하고 조회가 성공적으로 이루어지면 성공에 대한 응답을 받습니다. 서버 에러, 인증 실패, 데이터베이스 에러가 발생할 수 있습니다.    
+
+- method : **GET**  
+- URL : **/concentration**  
+
+##### Request
+
+###### Header
+
+| name | description | required |
+|---|:---:|:---:|
+| Authorization | Bearer 토큰 인증 헤더 | O |
+
+###### Example
+
+```bash
+curl -v -X GET "http://127.0.0.1:4000/api/v1/test/concentration" \
+ -h "Authorization=Bearer XXXX"
+```
+
+##### Response
+
+###### Response Body
+
+| name | type | description | required |
+|---|:---:|:---:|:---:|
+| code | String | 응답 결과 코드 | O |
+| message | String | 응답 결과 코드에 대한 설명 | O |
+| concentrationTests | ConcentrationTest[] | 일기 리스트 | O |
+
+###### ConcentrationTest
+
+###### Example
+
+| name | type | description | required |
+|---|:---:|:---:|:---:|
+| sequence | Integer | 사용자별 검사 순번 | O |
+| measurementScore | Integer | 측정 성공 횟수 | O |
+| errorCount | Integer | 측정 오류 횟수 | O |
+| testDate | String | 검사한 날짜 (yyyy-MM-dd hh:mm) | O |
+| scoreGap | Integer | 직전 순번의 측정된 횟수 - 현재 순번의 측정된 횟수 | X |
+| errorGap | Integer | 직전 순번의 측정된 오류 횟수 - 현재 순번의 측정된 오류 횟수 | X |
+
+**응답 성공**
+```bash
+HTTP/1.1 200 OK
+
+{
+  "code": "SU",
+  "message": "Success.",
+  "diaries": [
+    {
+      "sequence": 4,
+      "measurementScore": 15,
+      "errorCount": 2,
+      "testDate": "2025-03-20 18:50",
+      "scoreGap": 1
+      "errorGap": 1
+    }, ...
+  ]
+}
+```
+
+**응답 : 실패 (인증 실패)**
+```bash
+HTTP/1.1 401 Unauthorized
+
+{
+  "code": "AF",
+  "message": "Auth fail."
+}
+```
+
+**응답 : 실패 (데이터베이스 에러)**
+```bash
+HTTP/1.1 500 Internal Server Error
+
+{
+  "code": "DBE",
+  "message": "Database Error."
+}
+```
