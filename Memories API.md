@@ -987,3 +987,13 @@ HTTP/1.1 500 Internal Server Error
   "message": "Database Error."
 }
 ```
+
+***
+  
+<h2 style='background-color: rgba(55, 55, 55, 0.2); text-align: center'>Test 모듈</h2>
+
+Memories 서비스의 인지 검사와 관련된 REST API 모듈입니다.  
+기억력 검사 기록, 집중력 검사 기록, 기억력 검사 리스트 불러오기, 집중력 검사 리스트 불러오기 등의 API가 포함되어 있습니다.  
+Test 모듈은 모두 인증 후 요청할 수 있는 모듈입니다. 
+  
+- url : /api/v1/test  
