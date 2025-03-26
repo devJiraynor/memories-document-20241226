@@ -1113,8 +1113,8 @@ HTTP/1.1 500 Internal Server Error
 ```bash
 curl -v -X POST "http://127.0.0.1:4000/api/v1/test/memory" \
  -h "Authorization=Bearer XXXX" \
- -d "measurementTime=17 \
- -d "measurementTime=2 
+ -d "measurementScore=17 \
+ -d "errorCount=2 
 ```
 
 ##### Response
